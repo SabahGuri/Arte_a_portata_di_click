@@ -21,7 +21,7 @@ return new class extends Migration
             $table->float('zip_code');
             $table->string('city');
             $table->string('phone_nr');
-            $table->float('totale');
+            $table->float('total');
             $table->timestamps();
         });
     }

@@ -26,7 +26,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store($request,$costumer_id)//!passo come secondo parametro il costumer_id ottenuto nel PictureController grazie al rutrn fatto nel CostumerController
     {
         $order=new Order;
         $order->first_name=$request->nome;
@@ -37,7 +37,8 @@ class OrderController extends Controller
         $order->zip_code=$request->cap;
         $order->phone_nr=$request->telefono;
         $order->city=$request->citta;
-        $order->user_id=auth()->user()->id;
+        $order->total=100;
+        $order->costumer_id=$costumer_id;
         $order->save();
 
         return redirect()->route('home.index');

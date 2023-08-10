@@ -38,6 +38,11 @@
 
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="{{route('user.costumers')}}">I miei clienti</a>
+
+            </li>
+            
+            <li class="nav-item">
               <form action="/logout" method="post">
                 @csrf
                 <button class="btn btn-sm btn-secondary">Esci</button>

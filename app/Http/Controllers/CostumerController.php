@@ -26,7 +26,7 @@ class CostumerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store( $request)
+    public function store($request)
     {
         $costumer=new Costumer;
         $costumer->first_name=$request->nome;
@@ -40,7 +40,8 @@ class CostumerController extends Controller
         $costumer->user_id=auth()->user()->id;
         $costumer->save();
 
-        return redirect()->route('home.index');
+        return $costumer->id; //!facciamo questo per avere a disposizione l'id del costumer per poterlo passare nell'ordine 
+        //!l'id lo passo come parametro all'interno dell' OrderController nella funzione store
 
     }
 

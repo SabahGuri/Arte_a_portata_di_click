@@ -1,9 +1,10 @@
 <x-layout>
-    <h1>Tutti i nostri quadri</h1>
+
+    <h1></h1>
     <div class="container">
         <div class="row">
               
-    @foreach ($pictures as $picture)
+   
       
         <div class=" col-12 col-md-4 my-3">
                     <img src="{{asset('storage/'. $picture->image)}}" class="img-fluid" alt="">
@@ -23,18 +24,17 @@
                                 @method('DELETE')
                                 <button type="submit">Elimina</button>
                             </form>
-                           
+
                         @else    
-                       
+                        
                         @endif
                     @endif
-
-                    <a href="{{route('pictures.show',[$picture->id])}}"><button type="submit">Vedi dettaglio</button></a>
+                    <a href="{{route('pictures.check-out',[$picture->id])}}" class=""><button type="submit">Aquista</button></a>
 
 
                     
         </div>
-    @endforeach 
+    
         </div>
     </div>
 </x-layout>

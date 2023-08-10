@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Picture;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Http\Requests\StorePictureRequest;
 use App\Http\Controllers\CostumerController;
 
@@ -17,8 +19,15 @@ class PictureController extends Controller
     public function index()
     {
         $pictures=Picture::all();
+        $categories=Category::all();
+        return view('pictures.index',[
+            
+            'pictures'=>$pictures,
+            'categories'=>$categories
 
-        return view('pictures.index',['pictures'=>$pictures]);
+        
+        
+        ]);
     }
 
     /**
@@ -26,7 +35,11 @@ class PictureController extends Controller
      */
     public function create()
     {
-        return view('pictures.create');
+
+        $categories=Category::all();
+        return view('pictures.create',[
+            'categories'=>$categories
+        ]);
     }
 
     /**
@@ -35,7 +48,7 @@ class PictureController extends Controller
     public function store(StorePictureRequest $request)
     {
 
-        
+   
        
 
      
@@ -61,15 +74,24 @@ class PictureController extends Controller
         
         $picture->save();
 
+        $categories=$request->categorie;//! qui salvo l'array delle categorie salvate dall'utente nel form
+        $current_picture=Picture::find($picture->id);//!mi ricavo l'ultimo record di quadro aggiunto
+        foreach($categories as $category){//!faccio il foreach dell'array di categorie
+            
+            $current_picture->categories()->attach($category);//! attraverso la funzione categories che si trova nel model Picture con la funzione attach vado a collegare il quadro con la categoria nella tabella category_picture 
+        }
+
         return redirect()->route('pictures.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Picture $picture)
+    public function show($id)
     {
-        //
+        $picture=Picture::find($id);
+
+        return view('pictures.show',['picture'=>$picture]);
     }
 
     /**
@@ -78,11 +100,15 @@ class PictureController extends Controller
     public function edit($id)
     {   
         $picture=Picture::find($id);
+        $categories=Category::all();
 
         //! if che serve a fermare gli utenti loggati a non modificare i quadri degi altri attraverso l'url
         if(auth()->user()->id==$picture->user_id){
             
-            return view('pictures.edit',['picture'=>$picture]);
+            return view('pictures.edit',[
+                'picture'=>$picture,
+                'categories'=>$categories
+            ]);
         }else{
             return redirect()->route('pictures.index');
         }
@@ -96,9 +122,10 @@ class PictureController extends Controller
     public function update(Request $request,  $id)
     {   
         $picture=Picture::find($id);
-        //! if che serve a fermare gli utenti loggati a non modificare i quadri degi altri attraverso l'url
+       
+        //! if che serve a fermare gli utenti non loggati a non modificare i quadri degi altri attraverso l'url
         if(auth()->user()->id==$picture->user_id){
-            $imageName='picture-image-' . $imageId . '.jpg';
+           
 
             
             if($request->file('immagine')){
@@ -108,6 +135,7 @@ class PictureController extends Controller
                 }else{
                     $imageId=uniqid();
                 }
+                $imageName='picture-image-' . $imageId . '.jpg';
                 $picture->image_id=$imageId;
                 $picture->image=$imageName;
                 $image=$request->file('immagine')->storeAs('public',$imageName);
@@ -115,14 +143,34 @@ class PictureController extends Controller
                
             }
             $picture->save();
-        }else{
-            return redirect()->route('pictures.index');
-        }        
 
+            //*prima devo eliminare tutte le categorie precedentemente selezionate dopo le aggiungp nell'altro ciclo
+            $allCategories=Category::all();
+            $current_picture=Picture::find($picture->id);//!mi ricavo l'ultimo record di quadro aggiunto
+            foreach($allCategories as $singleCategory ){
+                $current_picture->categories()->detach($singleCategory->id);//! attraverso la funzione categories che si trova nel model Picture con la funzione attach vado a collegare il quadro con la categoria nella tabella category_picture 
+
+            }
+
+
+            //* ciclo per aggiungere le nuove categorie
+            $categories=$request->categorie;//! qui salvo l'array delle categorie salvate dall'utente nel form
+           
+            foreach($categories as $category){//!faccio il foreach dell'array di categorie
+            
+            $current_picture->categories()->attach($category);//! attraverso la funzione categories che si trova nel model Picture con la funzione attach vado a collegare il quadro con la categoria nella tabella category_picture 
+            }
+
+            return redirect()->route('pictures.index');
+        }else{
+            return redirect()->route('home.index');
+        }    
+        
+        
+        
             
 
-        return redirect()->route('pictures.index');
-
+        
     }
 
     /**
@@ -148,8 +196,10 @@ class PictureController extends Controller
 
     //! lo store dell'ordine
     public function performCheckout(Request $request,$id){
-        $add_costumer=(new CostumerController)->store($request);
+        $add_costumer=(new CostumerController)->store($request);//!qui viene passato l'id del costumer  grazie al return fatto nel CostumerController
 
-        return $add_costumer;
+        $add_order=(new OrderController)->store($request,$add_costumer);
+
+        return $add_order;
     }
 }

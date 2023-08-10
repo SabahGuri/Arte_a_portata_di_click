@@ -16,6 +16,15 @@
         {{-- immagine --}}
         <label for="immagine">Immagine</label><br>
         <input type="file" name="immagine" id="immagine">
+        {{-- categorie --}}
+        <label for="categorie">Categorie</label><br>
+        <select name="categorie[]" id="categorie" multiple >
+          @foreach ($categories as $category)
+
+                                                {{-- abbiamo fatto un if inline per dire che se la categoria è stat gia impostata la deve selezionare altrimenti niente --}}
+            <option value="{{$category->id}}" {{($picture->categories->contains($category->id)) ? 'selected':'' }}> {{$category->name}}</option>
+          @endforeach
+        </select>
         {{-- bottone submit --}}
         <button type="submit">Modifica</button>
     </form>

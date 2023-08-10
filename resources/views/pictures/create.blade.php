@@ -15,8 +15,15 @@
         <input type="number" name="prezzo" id="prezzo"><br>
         {{-- immagine --}}
         <label for="immagine">Immagine</label><br>
-        <input type="file" name="immagine" id="immagine">
-        {{-- bottone submit --}}
+        <input type="file" name="immagine" id="immagine"><br>
+        {{--categorie --}}
+        <label for="categorie">Categorie</label><br>
+        <select name="categorie[]" id="categorie" multiple >
+          @foreach ($categories as $category)
+            <option value="{{$category->id}}">{{$category->name}}</option>
+          @endforeach
+        </select>
+        {{-- bottone submit --}} 
         <button type="submit">Aggiungi</button>
     </form>
 </x-layout>
