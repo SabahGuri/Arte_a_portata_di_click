@@ -130,7 +130,7 @@ class PictureController extends Controller
             
             if($request->file('immagine')){
 
-                if($article->image_id!==""){
+                if($picture->image_id!==""){
                     $imageId=$picture->image_id;
                 }else{
                     $imageId=uniqid();

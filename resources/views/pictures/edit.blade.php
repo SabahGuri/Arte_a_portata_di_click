@@ -21,7 +21,7 @@
         <select name="categorie[]" id="categorie" multiple >
           @foreach ($categories as $category)
 
-                                                {{-- abbiamo fatto un if inline per dire che se la categoria è stat gia impostata la deve selezionare altrimenti niente --}}
+                                                {{-- abbiamo fatto un if inline per dire che se la categoria è stata gia impostata la deve selezionare altrimenti niente --}}
             <option value="{{$category->id}}" {{($picture->categories->contains($category->id)) ? 'selected':'' }}> {{$category->name}}</option>
           @endforeach
         </select>
